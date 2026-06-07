@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일차방정식 마스터</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.0/marked.min.js"></script>
+    <!-- PDF 다운로드를 위한 라이브러리 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        body {
+            background-color: #fcf8f2; /* 봄 느낌의 따뜻하고 부드러운 피치/크림 배경 */
+            font-family: 'Pretendard', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* 수학 수식 전용 폰트 (수학 교과서/논문 표준) */
+        .math-text {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+        }
+        
+        /* 정오답 애니메이션 (도장 효과) */
+        .stamp-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+        .stamp-show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1) rotate(-10deg);
+        }
+
+        /* 퀴즈 박스 흔들림 애니메이션 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .shake-anim { animation: shake 0.4s ease-in-out; }
+
+        /* 결과창 표 스타일 (PDF 변환 시 깨짐 방지 및 세로 높이 최적화) */
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .print-table th, .print-table td {
+            border: 1px solid #fecdd3; /* 로즈 톤 보더 */
+            padding: 7px 8px; 
+            text-align: center;
+        }
+        .print-table th {
+            background-color: #fff1f2;
+            font-weight: 700;
+            color: #881337;
+        }
+        .print-table td {
+            color: #4c0519;
+        }
+
+        /* [핵심 복구 및 최적화] PDF 페이지 넘김 시 거대한 빈 여백 및 글자 잘림 동시 방지 */
+        #ai-feedback-display p, 
+        #ai-feedback-display li {
+            margin-bottom: 0.5rem !important; /* 쪼개진 문단들이 촘촘하게 보이도록 여백 축소 */
+            margin-top: 0 !important;
+            page-break-inside: avoid;
+            break-inside: avoid;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen p-4 md:p-8 flex flex-col items-center">
+
+    <!-- 최상위 컨테이너: 기본은 좁게(max-w-md), 결과창에서는 넓게(max-w-4xl) 동적 변경됨 -->
+    <div id="main-container" class="w-full max-w-md mx-auto space-y-6 pb-4 transition-all duration-500 ease-in-out">
+        
+        <div class="text-center mt-6 mb-8">
+            <h1 class="text-3xl font-bold text-rose-500 mb-2"><i class="fa-solid fa-seedling mr-2"></i>일차방정식 마스터</h1>
+            <p class="text-rose-400 text-sm">중학교 1학년 일차방정식 정복하기</p>
+        </div>
+
+        <!-- 로그인 섹션 -->
+        <div id="sec-login" class="bg-white p-6 rounded-2xl shadow-sm border border-rose-50 flex flex-col space-y-4">
+            <h2 class="text-xl font-bold text-slate-700 text-center mb-2">시작하기 전에</h2>
+            <input type="text" id="studentId" autofocus placeholder="학번 (예: 10101)" class="w-full p-4 bg-orange-50/50 border border-rose-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-300 focus:bg-white transition-all">
+            <input type="text" id="studentName" placeholder="이름" class="w-full p-4 bg-orange-50/50 border border-rose-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-300 focus:bg-white transition-all">
+            <input type="password" id="studentPw" placeholder="비밀번호" class="w-full p-4 bg-orange-50/50 border border-rose-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-300 focus:bg-white transition-all">
+            
+            <button onclick="handleLogin()" id="loginBtn" class="w-full bg-rose-400 hover:bg-rose-50 text-white font-bold py-4 rounded-xl mt-2 transition-colors">
+                로그인 및 시작
+            </button>
+            <p id="login-error" class="text-red-400 text-sm text-center hidden">정보가 일치하지 않습니다.</p>
+        </div>
+
+        <!-- 퀴즈 섹션 -->
+        <div id="sec-quiz" class="hidden bg-white p-6 rounded-2xl shadow-sm border border-rose-50 flex-col relative">
+            <div class="flex justify-between items-center mb-6 border-b border-rose-50 pb-4">
+                <div class="text-rose-600 font-bold bg-rose-50 px-3 py-1 rounded-full">문제 <span id="q-idx">1</span> / 15</div>
+                <div id="quiz-timer" class="text-rose-300 font-mono"><i class="fa-regular fa-clock mr-1"></i>00:00</div>
+            </div>
+
+            <div id="stamp-correct" class="stamp-overlay text-emerald-400 text-8xl"><i class="fa-regular fa-circle"></i></div>
+            <div id="stamp-wrong" class="stamp-overlay text-rose-500 text-8xl"><i class="fa-solid fa-xmark"></i></div>
+
+            <div id="quiz-box" class="py-12 flex flex-col items-center">
+                <div id="question-display" class="text-4xl md:text-5xl math-text text-slate-800 mb-8 h-20 flex items-center justify-center whitespace-nowrap"></div>
+                <input type="text" id="answer-input" placeholder="x의 값 (분수는 / 사용, 예: -1/2) ⏎" class="w-full md:w-3/4 p-4 text-center text-lg bg-orange-50/50 border-b-2 border-rose-200 focus:outline-none focus:border-rose-400 focus:bg-white transition-all rounded-t-lg">
+            </div>
+
+            <div class="w-full bg-rose-50 rounded-full h-2 mt-4">
+                <div id="progress-bar" class="bg-rose-300 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- 로딩 섹션 -->
+        <div id="sec-loading" class="hidden bg-white p-8 rounded-2xl shadow-sm border border-rose-50 text-center py-16">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-rose-100 border-t-rose-400 mb-4"></div>
+            <h3 class="text-xl font-bold text-slate-700 mb-2">결과 분석 중...</h3>
+            <p class="text-rose-400 text-sm">AI 선생님이 피드백을 작성하고 리포트를 구성하고 있어요.</p>
+        </div>
+
+        <!-- 결과 섹션 -->
+        <div id="sec-result" class="hidden flex-col space-y-6 w-full">
+            
+            <div id="pdf-content" class="bg-white">
+                
+                <!-- ====== PDF 1쪽 파트: 제목, 정보, 정오답표 ====== -->
+                <div class="p-8">
+                    <!-- 1쪽 상단 장식 선 -->
+                    <div class="mx-auto w-[98%] h-2.5 bg-rose-400 rounded-full mb-10 mt-2"></div>
+
+                    <div class="mb-6">
+                        <h1 id="report-title" class="text-3xl font-bold text-rose-600 tracking-tight text-center"></h1>
+                        <!-- 제목과 그 아래 줄 사이의 여백 (글자 한 줄 높이와 동일한 h-6 적용) -->
+                        <div class="h-6"></div>
+                        <!-- 두 번째 줄: 학번과 이름 (왼쪽 정렬) -->
+                        <div id="report-student-info" class="text-left text-lg font-bold text-slate-700 mb-2 px-2"></div>
+                        <!-- 세 번째 줄: 결과 통계 (왼쪽 정렬) -->
+                        <div class="flex flex-wrap justify-start items-center gap-4 text-rose-500 font-medium px-2">
+                            <span id="report-correct"></span>
+                            <span class="text-rose-200">|</span>
+                            <span id="report-time"></span>
+                            <span class="text-rose-200">|</span>
+                            <span id="report-date"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <table class="print-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%;">번호</th>
+                                    <th style="width: 35%;">문제</th>
+                                    <th style="width: 20%;">나의 답</th>
+                                    <th style="width: 20%;">정답</th>
+                                    <th style="width: 15%;">결과</th>
+                                </tr>
+                            </thead>
+                            <tbody id="result-table-body">
+                                <!-- JS에서 동적 생성됨 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ====== PDF 2쪽 파트: AI 피드백 ====== -->
+                <!-- 2쪽 장식선이 1쪽으로 넘어가지 않도록 강력한 page-break 스타일 적용 -->
+                <div class="p-8 sm:border-none" style="page-break-before: always; break-before: page;">
+                    <!-- 2쪽 상단 장식 선 -->
+                    <div class="mx-auto w-[98%] h-2.5 bg-rose-400 rounded-full mb-10 mt-2"></div>
+                    
+                    <h2 class="text-2xl font-bold text-rose-600 mb-6 flex items-center">
+                        <i class="fa-solid fa-chalkboard-user mr-3"></i>AI 선생님의 맞춤형 피드백
+                    </h2>
+                    <div id="ai-feedback-display" class="prose prose-rose max-w-none text-slate-700 p-6 bg-rose-50/40 rounded-xl border border-rose-100">
+                        <!-- AI 피드백 내용 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 하단 버튼 (이 부분은 PDF에 들어가지 않습니다) -->
+            <div class="flex flex-col sm:flex-row gap-4 mt-6">
+                <button id="pdf-download-btn" class="flex-1 bg-amber-400 hover:bg-amber-500 text-white font-bold py-4 rounded-xl shadow-sm transition-colors flex justify-center items-center text-lg">
+                    <i class="fa-solid fa-file-pdf mr-2"></i>내 학습결과 리포트 PDF 다운로드
+                </button>
+                <button onclick="location.reload()" class="flex-1 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-4 rounded-xl shadow-sm transition-colors text-lg">
+                    <i class="fa-solid fa-rotate-right mr-2"></i>다시 도전하기
+                </button>
+            </div>
+
+            <!-- 명예의 전당 -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-rose-50 mt-2">
+                <h3 class="text-lg font-bold text-slate-700 mb-4 flex items-center"><i class="fa-solid fa-trophy text-yellow-400 mr-2"></i>명예의 전당 (TOP 30)</h3>
+                <div class="overflow-x-auto rounded-xl border border-rose-100">
+                    <table class="w-full text-sm text-left whitespace-nowrap">
+                        <thead class="bg-rose-50/50 text-rose-600 font-bold border-b border-rose-100">
+                            <tr>
+                                <th class="px-4 py-3 text-center">순위</th>
+                                <th class="px-4 py-3">이름</th>
+                                <th class="px-4 py-3 text-center">점수</th>
+                                <th class="px-4 py-3 text-center">기록</th>
+                                <th class="px-4 py-3 text-center">로그인 일시</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ranking-body" class="divide-y divide-rose-50">
+                            <!-- 랭킹 생성됨 -->
+                        </tbody>
+                    </table>
+                </div>
+                <button onclick="location.reload()" class="w-full mt-6 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-3 rounded-xl transition-colors">
+                    처음으로 돌아가기
+                </button>
+            </div>
+        </div>
+
+        <!-- 푸터 (제작자 표기) -->
+        <div class="mt-8 text-center text-rose-300 text-sm font-medium tracking-wide">
+            Made by Euna for Math Education
+        </div>
+    </div>
+
+    <audio id="sound-correct" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"></audio>
+    <audio id="sound-wrong" src="https://assets.mixkit.co/active_storage/sfx/2004/2004-preview.mp3"></audio>
+
+    <script>
+        function customAlert(message) {
+            const overlay = document.createElement('div');
+            overlay.className = 'fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50';
+            const box = document.createElement('div');
+            box.className = 'bg-white p-6 rounded-2xl shadow-xl max-w-sm w-full mx-4 text-center';
+            box.innerHTML = `
+                <p class="text-slate-700 mb-6 font-medium">${message}</p>
+                <button class="bg-rose-400 text-white px-6 py-3 rounded-xl font-bold hover:bg-rose-500 w-full transition-colors">확인</button>
+            `;
+            box.querySelector('button').onclick = () => document.body.removeChild(overlay);
+            overlay.appendChild(box);
+            document.body.appendChild(overlay);
+        }
+
+        // =========================================================
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxHivRQVY52gsEpoAQIRukIygEPcmxL77b0V9FtJJpxltPSlqab-huFSr7ymn0fBJ1O/exec";
+        // =========================================================
+        
+        let state = {
+            student: {},
+            questions: [],
+            results: [],
+            currentIndex: 0,
+            startTime: null,
+            timerInterval: null
+        };
+
+        function showSection(secId) {
+            ['sec-login', 'sec-quiz', 'sec-loading', 'sec-result'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+                el.classList.remove('flex-col');
+            });
+            const target = document.getElementById(secId);
+            target.classList.remove('hidden');
+            
+            if (secId === 'sec-result') {
+                document.getElementById('main-container').classList.remove('max-w-md');
+                document.getElementById('main-container').classList.add('max-w-4xl');
+                target.classList.add('flex', 'flex-col');
+            } else if (secId === 'sec-login' || secId === 'sec-quiz') {
+                document.getElementById('main-container').classList.add('max-w-md');
+                document.getElementById('main-container').classList.remove('max-w-4xl');
+                target.classList.add('flex', 'flex-col');
+            } else if (secId === 'sec-loading') {
+                target.classList.add('block');
+            }
+        }
+
+        // 💡 선생님의 디테일한 수학적 조건을 모두 만족하는 15문항 뼈대 구성 함수
+        function createConfigs() {
+            const configs = [
+                // [조건 1] a와 b가 동시에 양수인 경우는 딱 2문제 (+, +)
+                { a_type: 'int', coprime: false, x_type: 'frac', a_sign: '+', x_sign: '+' },
+                { a_type: 'int', coprime: false, x_type: 'int',  a_sign: '+', x_sign: '+' },
+
+                // [나머지 13문제] 부호가 다르거나 둘 다 음수
+                // 그룹 2: a 양수, x 음수 (+, -) => 5문제
+                { a_type: 'frac', is_double_frac: true, x_type: 'frac', a_sign: '+', x_sign: '-' }, // [조건 2] a, b가 동시에 분수이며 약분되는 딱 1문제
+                { a_type: 'int', coprime: false, x_type: 'frac', a_sign: '+', x_sign: '-' },
+                { a_type: 'int', coprime: false, x_type: 'int',  a_sign: '+', x_sign: '-' },
+                { a_type: 'int', coprime: false, x_type: 'int',  a_sign: '+', x_sign: '-' },
+                { a_type: 'int', coprime: false, x_type: 'int',  a_sign: '+', x_sign: '-' },
+
+                // 그룹 3: a 음수, x 양수 (-, +) => 5문제
+                { a_type: 'int', coprime: true, a_val: -1, x_type: 'int', a_sign: '-', x_sign: '+' }, // a=-1 고정
+                { a_type: 'frac', is_double_frac: false, x_type: 'int', a_sign: '-', x_sign: '+' }, // a가 분수 (총 4개 중 하나)
+                { a_type: 'int', coprime: false, x_type: 'frac', a_sign: '-', x_sign: '+' },
+                { a_type: 'int', coprime: false, x_type: 'int',  a_sign: '-', x_sign: '+' },
+                { a_type: 'int', coprime: false, x_type: 'int',  a_sign: '-', x_sign: '+' },
+
+                // 그룹 4: a 음수, x 음수 (-, -) => 3문제
+                { a_type: 'frac', a_num_val: -1, is_double_frac: false, x_type: 'int', a_sign: '-', x_sign: '-' }, // 분자 -1 고정
+                { a_type: 'frac', is_double_frac: false, x_type: 'int', a_sign: '-', x_sign: '-' },
+                { a_type: 'int', coprime: false, x_type: 'frac', a_sign: '-', x_sign: '-' }
+            ];
+            
+            // 문제 순서를 무작위로 섞음 (조건 비율은 완벽히 유지됨)
+            for (let i = configs.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [configs[i], configs[j]] = [configs[j], configs[i]];
+            }
+            return configs;
+        }
+
+        // 💡 뼈대를 바탕으로 실제 숫자(a, b)를 뽑아내고 기약분수로 검증하는 로직
+        function generateProblem(config) {
+            let a_num, a_den, b_num, b_den;
+            const getGCD = (x, y) => y === 0 ? Math.abs(x) : getGCD(y, x % y);
+
+            if (config.a_type === 'int') {
+                a_den = 1;
+                b_den = 1; // a가 정수일 때 b는 무조건 정수로 통제
+                if (config.a_val === -1) { 
+                    a_num = 1; 
+                    b_num = Math.floor(Math.random() * 8) + 2; 
+                } else {
+                    let g = Math.floor(Math.random() * 3) + 2; // 최소 공약수 2 이상
+                    let a_base = Math.floor(Math.random() * 4) + 2; // a=1 차단
+                    a_num = a_base * g; 
+                    
+                    if (config.x_type === 'frac') {
+                        let possible_b_base = [1, 2, 3, 5, 7].filter(x => x % a_base !== 0);
+                        let b_base = possible_b_base[Math.floor(Math.random() * possible_b_base.length)];
+                        b_num = b_base * g;
+                    } else {
+                        let x_abs = Math.floor(Math.random() * 5) + 2; 
+                        b_num = a_num * x_abs;
+                    }
+                }
+            } else {
+                let den_pool = [3, 4, 5, 7];
+                a_den = den_pool[Math.floor(Math.random() * den_pool.length)];
+                
+                if (config.a_num_val === -1) { 
+                    a_num = 1;
+                } else {
+                    a_num = [2, 3, 4, 5][Math.floor(Math.random() * 4)];
+                    while (getGCD(a_num, a_den) > 1 || a_num === a_den) {
+                        a_num = [2, 3, 4, 5][Math.floor(Math.random() * 4)];
+                        a_den = den_pool[Math.floor(Math.random() * den_pool.length)];
+                    }
+                }
+
+                if (config.is_double_frac) {
+                    // [핵심] b도 분수이면서 b/a 계산 시 무조건 약분이 발생하도록 의도적 설계
+                    let shared_num_factor = [2, 3][Math.floor(Math.random() * 2)];
+                    let shared_den_factor = [2, 3][Math.floor(Math.random() * 2)];
+                    
+                    b_num = a_num * shared_num_factor;
+                    b_den = a_den * shared_den_factor;
+                    
+                    // b를 기약분수로 정리
+                    let gb = getGCD(b_num, b_den);
+                    b_num /= gb; 
+                    b_den /= gb;
+                    
+                    // b가 우연히 정수가 되는 것 방지
+                    if (b_den === 1) { 
+                        b_den = 5; 
+                        b_num = a_num * 2; 
+                        let gb2 = getGCD(b_num, b_den);
+                        b_num /= gb2; b_den /= gb2;
+                    }
+                } else {
+                    // a는 분수지만 b는 깔끔한 정수로 떨어지게 설정
+                    b_den = 1;
+                    let k = Math.floor(Math.random() * 3) + 1; // 1, 2, 3
+                    b_num = a_num * k; 
+                }
+            }
+
+            // 부호 강제 적용
+            let a_sign_val = config.a_sign === '+' ? 1 : -1;
+            let x_sign_val = config.x_sign === '+' ? 1 : -1;
+            let b_sign_val = a_sign_val * x_sign_val;
+            
+            a_num *= a_sign_val;
+            b_num *= b_sign_val;
+
+            // 기약분수화
+            let g_a = getGCD(a_num, a_den);
+            a_num /= g_a; a_den /= g_a;
+            if(a_den < 0) { a_num *= -1; a_den *= -1; }
+            
+            let g_b = getGCD(b_num, b_den);
+            b_num /= g_b; b_den /= g_b;
+            if(b_den < 0) { b_num *= -1; b_den *= -1; }
+            
+            // 수식 포맷팅
+            let aStr = "";
+            let aText = "";
+            if (a_den === 1) {
+                if (a_num === 1) { aStr = ""; aText = ""; }
+                else if (a_num === -1) { aStr = "-"; aText = "-"; }
+                else { aStr = a_num.toString(); aText = a_num.toString(); }
+            } else {
+                let sign = a_num < 0 ? "-" : "";
+                let absNum = Math.abs(a_num);
+                aText = `${sign}${absNum}/${a_den}`;
+                aStr = `${sign}<span class="inline-flex flex-col items-center justify-center mx-1" style="font-size: 0.85em; line-height: 1; vertical-align: middle; transform: translateY(-0.1em);">
+                    <span class="px-1" style="padding-bottom: 3px;">${absNum}</span>
+                    <span class="border-t-[1.5px] border-slate-800 w-full block"></span>
+                    <span class="px-1" style="padding-top: 3px;">${a_den}</span>
+                </span>`;
+            }
+
+            let bStr = "";
+            let bText = "";
+            if (b_den === 1) {
+                bStr = b_num.toString();
+                bText = b_num.toString();
+            } else {
+                let sign = b_num < 0 ? "-" : "";
+                let absNum = Math.abs(b_num);
+                bText = `${sign}${absNum}/${b_den}`;
+                bStr = `${sign}<span class="inline-flex flex-col items-center justify-center mx-1" style="font-size: 0.85em; line-height: 1; vertical-align: middle; transform: translateY(-0.1em);">
+                    <span class="px-1" style="padding-bottom: 3px;">${absNum}</span>
+                    <span class="border-t-[1.5px] border-slate-800 w-full block"></span>
+                    <span class="px-1" style="padding-top: 3px;">${b_den}</span>
+                </span>`;
+            }
+
+            let questionHtml = `${aStr}<span class="mx-1 math-text">&#x1D465;</span> = ${bStr}`;
+            let questionText = `${aText}x = ${bText}`;
+
+            // 💡 정답 생성 (무조건 완벽한 기약분수 형태의 문자열로 고정)
+            let ansN_raw = b_num * a_den;
+            let ansD_raw = b_den * a_num;
+            
+            let g_ans = getGCD(ansN_raw, ansD_raw);
+            let ansN = Math.abs(ansN_raw) / g_ans;
+            let ansD = Math.abs(ansD_raw) / g_ans;
+            let finalSign = (ansN_raw / ansD_raw < 0) && ansN !== 0 ? "-" : "";
+
+            let correctStr = "";
+            if (ansN === 0) correctStr = "0";
+            else correctStr = ansD === 1 ? `${finalSign}${ansN}` : `${finalSign}${ansN}/${ansD}`;
+
+            return {
+                questionHtml: questionHtml,
+                questionText: questionText,
+                correctAnswerStr: correctStr
+            };
+        }
+
+        async function handleLogin() {
+            const btn = document.getElementById('loginBtn');
+            const data = {
+                action: 'verifyLogin',
+                id: document.getElementById('studentId').value.trim(),
+                name: document.getElementById('studentName').value.trim(),
+                pw: document.getElementById('studentPw').value.trim()
+            };
+
+            if (!data.id || !data.name || !data.pw) {
+                customAlert("정보를 모두 입력해주세요."); return;
+            }
+
+            btn.innerText = "확인 중..."; btn.disabled = true;
+
+            try {
+                const response = await fetch(GAS_URL, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(data) 
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    state.student = { id: data.id, name: data.name };
+                    state.student.loginTime = new Date().toLocaleString();
+                    startQuiz();
+                } else {
+                    document.getElementById('login-error').classList.remove('hidden');
+                    btn.innerText = "로그인 및 시작"; btn.disabled = false;
+                }
+            } catch (e) {
+                customAlert("서버 통신 오류. 인터넷 연결을 확인하세요.");
+                btn.innerText = "로그인 및 시작"; btn.disabled = false;
+            }
+        }
+
+        function startQuiz() {
+            // [수정] 위에서 정의한 15가지 완벽한 수학적 세팅을 불러와 문제 출제
+            let configs = createConfigs();
+            state.questions = configs.map(cfg => generateProblem(cfg));
+            
+            state.currentIndex = 0;
+            state.results = [];
+            state.startTime = Date.now();
+            
+            showSection('sec-quiz');
+            loadNextQuestion();
+
+            state.timerInterval = setInterval(() => {
+                const sec = Math.floor((Date.now() - state.startTime) / 1000);
+                const m = String(Math.floor(sec / 60)).padStart(2, '0');
+                const s = String(sec % 60).padStart(2, '0');
+                document.getElementById('quiz-timer').innerHTML = `<i class="fa-regular fa-clock mr-1"></i>${m}:${s}`;
+            }, 1000);
+        }
+
+        function loadNextQuestion() {
+            const q = state.questions[state.currentIndex];
+            document.getElementById('q-idx').innerText = state.currentIndex + 1;
+            document.getElementById('question-display').innerHTML = q.questionHtml;
+            
+            const input = document.getElementById('answer-input');
+            input.value = ''; input.disabled = false; input.focus();
+            
+            const progress = (state.currentIndex / 15) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+        }
+
+        document.getElementById('answer-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && this.value.trim() !== '') checkAnswer(this.value);
+        });
+
+        function checkAnswer(userStr) {
+            const input = document.getElementById('answer-input');
+            input.disabled = true;
+
+            // 💡 [핵심] 기약분수만 정답 인정 (소수점 채점 폐기, 문자열 완전 일치 방식으로 변경)
+            // 학생이 입력한 값에서 공백을 모두 제거하고 텍스트로 대조합니다. (예: 2/4는 1/2와 문자열이 다르므로 무조건 자동 오답 처리됨)
+            const normalizedUser = userStr.replace(/\s+/g, '').replace(/^\+/, '');
+            const correctAnswerStr = state.questions[state.currentIndex].correctAnswerStr;
+            
+            const isCorrect = (normalizedUser === correctAnswerStr);
+
+            const stampCorrect = document.getElementById('stamp-correct');
+            const stampWrong = document.getElementById('stamp-wrong');
+            const quizBox = document.getElementById('quiz-box');
+
+            if (isCorrect) {
+                document.getElementById('sound-correct').play();
+                stampCorrect.classList.add('stamp-show');
+            } else {
+                document.getElementById('sound-wrong').play();
+                stampWrong.classList.add('stamp-show');
+                quizBox.classList.add('shake-anim');
+            }
+
+            state.results.push({
+                question: state.questions[state.currentIndex].questionText,
+                questionHtml: state.questions[state.currentIndex].questionHtml,
+                userAnswer: userStr,
+                correctAnswer: correctAnswerStr,
+                isCorrect: isCorrect
+            });
+
+            setTimeout(() => {
+                stampCorrect.classList.remove('stamp-show');
+                stampWrong.classList.remove('stamp-show');
+                quizBox.classList.remove('shake-anim');
+                
+                state.currentIndex++;
+                if (state.currentIndex < 15) loadNextQuestion();
+                else finishQuiz();
+            }, 800);
+        }
+
+        async function finishQuiz() {
+            clearInterval(state.timerInterval);
+            showSection('sec-loading');
+
+            const timeTaken = Math.floor((Date.now() - state.startTime) / 1000);
+            const correctCount = state.results.filter(r => r.isCorrect).length;
+
+            const wrongListStr = state.results
+                .map((r, i) => r.isCorrect ? null : `${i + 1}번 문제: ${r.question} / 학생의 답: ${r.userAnswer} / 정답: ${r.correctAnswer}`)
+                .filter(x => x)
+                .join('\n');
+
+            try {
+                const [fbRes, lbRes] = await Promise.all([
+                    fetch(GAS_URL, { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'getFeedback', name: state.student.name, score: correctCount, time: timeTaken, wrongListStr: wrongListStr }) 
+                    }).then(r => r.json()),
+                    fetch(GAS_URL, { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'getLeaderboard' }) 
+                    }).then(r => r.json())
+                ]);
+
+                const finalData = {
+                    feedback: fbRes.feedback,
+                    leaderboard: lbRes.leaderboard,
+                    triggerPdf: true 
+                };
+
+                showResultView(finalData, timeTaken, correctCount);
+            } catch (e) {
+                customAlert("결과를 분석하는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+            }
+        }
+
+        function showResultView(data, time, correct) {
+            showSection('sec-result');
+            
+            const id = state.student.id || '학번미상';
+            const name = state.student.name || '이름미상';
+            
+            document.getElementById('report-title').innerText = `일차방정식(ax=b 형태) 결과 리포트`;
+            document.getElementById('report-student-info').innerHTML = `<i class="fa-solid fa-user-graduate text-rose-400 mr-2"></i>${id} ${name}`;
+            
+            document.getElementById('report-correct').innerHTML = `<i class="fa-solid fa-check text-emerald-400 mr-2"></i>맞힌 개수: <span class="font-bold text-rose-600">${correct} / 15</span>`;
+            document.getElementById('report-time').innerHTML = `<i class="fa-regular fa-clock text-rose-300 mr-2"></i>걸린 시간: <span class="font-bold text-slate-700">${time}초</span>`;
+            document.getElementById('report-date').innerHTML = `<i class="fa-regular fa-calendar text-rose-300 mr-2"></i>접속 일시: <span class="font-bold text-slate-700">${state.student.loginTime}</span>`;
+
+            const tbody = document.getElementById('result-table-body');
+            tbody.innerHTML = '';
+            state.results.forEach((r, idx) => {
+                const isCorrectStr = r.isCorrect 
+                    ? '<span style="color: #34d399; font-weight: bold; font-size: 1.1rem;">O</span>' 
+                    : '<span style="color: #fb7185; font-weight: bold; font-size: 1.1rem;">X</span>';
+                const userAnsStyle = r.isCorrect ? 'color: #334155;' : 'color: #e11d48; font-weight: bold;';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="vertical-align: middle;">${idx + 1}</td>
+                    <td style="font-size: 1.1rem; font-family: 'Cambria Math', 'Times New Roman', serif; vertical-align: middle;">${r.questionHtml}</td>
+                    <td style="${userAnsStyle} vertical-align: middle;">${r.userAnswer}</td>
+                    <td style="font-family: 'Cambria Math', 'Times New Roman', serif; vertical-align: middle;">${r.correctAnswer}</td>
+                    <td style="vertical-align: middle;">${isCorrectStr}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            let feedbackText = data.feedback;
+            if (!feedbackText) {
+                feedbackText = "⚠️ AI 피드백을 생성하지 못했습니다.";
+            }
+
+            const studentFullName = state.student.name || "";
+            let firstName = "";
+            let searchNames = [];
+
+            if (studentFullName === '남궁준') {
+                firstName = '준';
+                searchNames = ['남궁준', '궁준'];
+            } else if (studentFullName.length >= 2) {
+                firstName = studentFullName.substring(1);
+                searchNames = [studentFullName];
+            } else if (studentFullName.length === 1) {
+                firstName = studentFullName;
+                searchNames = [studentFullName];
+            }
+
+            if (firstName) {
+                searchNames.push(firstName);
+                searchNames.forEach(name => {
+                    const wrongCallRegex = new RegExp(name + '[아야]', 'g');
+                    feedbackText = feedbackText.replace(wrongCallRegex, firstName + ' 학생');
+                });
+                searchNames.forEach(name => {
+                    if(name !== firstName) {
+                        const nameRegex = new RegExp(name, 'g');
+                        feedbackText = feedbackText.replace(nameRegex, firstName);
+                    }
+                });
+            }
+
+            feedbackText = feedbackText.replace(/(정답:.*?)\s*(?:\*\*설명:\*\*|설명:)/g, '$1\n\n**설명:** ');
+            
+            // [핵심] 거대한 여백을 방지하기 위해 단일 줄바꿈을 다중 문단으로 강제 분리 (최적화 렌더링)
+            feedbackText = feedbackText.replace(/([^\n])\n([^\n])/g, '$1\n\n$2');
+
+            let feedbackHtml = marked.parse(feedbackText);
+
+            feedbackHtml = feedbackHtml.replace(/(^|[^0-9a-zA-Z/])([-+]?)\s*(\d+)\s*\/\s*(\d+)(?=[^0-9a-zA-Z/]|$)/g, function(match, prefix, sign, n, d) {
+                return `${prefix}${sign}<span class="inline-flex flex-col items-center justify-center mx-1" style="font-family: 'Cambria Math', 'Times New Roman', serif; font-size: 0.85em; line-height: 1; vertical-align: middle; transform: translateY(-0.1em);">
+                    <span class="px-1" style="padding-bottom: 3px;">${n}</span>
+                    <span class="border-t-[1.5px] border-slate-800 w-full block"></span>
+                    <span class="px-1" style="padding-top: 3px;">${d}</span>
+                </span>`;
+            });
+
+            document.getElementById('ai-feedback-display').innerHTML = feedbackHtml;
+
+            const rankTbody = document.getElementById('ranking-body');
+            rankTbody.innerHTML = '';
+            if (data.leaderboard && Array.isArray(data.leaderboard) && data.leaderboard.length > 0) {
+                data.leaderboard.forEach((r, idx) => {
+                    let rankStyle = "text-rose-400";
+                    if(idx === 0) rankStyle = "text-amber-500 font-bold";
+                    else if(idx === 1) rankStyle = "text-rose-400 font-bold";
+                    else if(idx === 2) rankStyle = "text-amber-600 font-bold";
+
+                    const row = `
+                        <tr class="hover:bg-rose-50/50 transition-colors">
+                            <td class="px-4 py-3 text-center ${rankStyle}">${idx + 1}</td>
+                            <td class="px-4 py-3 font-medium text-slate-700">${r.name}</td>
+                            <td class="px-4 py-3 text-center text-rose-500 font-bold">${r.score || r.correct || 0}</td>
+                            <td class="px-4 py-3 text-center text-slate-400 text-xs">${r.time}초</td>
+                            <td class="px-4 py-3 text-center text-slate-400 text-xs">${r.loginTime || '-'}</td>
+                        </tr>
+                    `;
+                    rankTbody.innerHTML += row;
+                });
+            } else {
+                rankTbody.innerHTML = `<tr><td colspan="5" class="px-4 py-6 text-center text-rose-300">데이터가 없습니다.</td></tr>`;
+            }
+
+            if (data.triggerPdf) {
+                setTimeout(() => {
+                    const element = document.getElementById('pdf-content');
+                    // pagebreak에 legacy 모드 추가하여 텍스트 깨짐 추가 방어
+                    const opt = {
+                        margin:       [15, 10, 15, 10],
+                        filename:     'temp.pdf',
+                        image:        { type: 'jpeg', quality: 0.8 }, 
+                        html2canvas:  { scale: 1, useCORS: true, letterRendering: true, scrollY: 0 }, 
+                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                        pagebreak:    { mode: ['css', 'legacy'] }
+                    };
+
+                    html2pdf().set(opt).from(element).output('datauristring').then(async function(pdfAsString) {
+                        const base64Data = pdfAsString.split(',')[1];
+                        try {
+                            await fetch(GAS_URL, {
+                                method: 'POST',
+                                mode: 'no-cors', 
+                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                                body: JSON.stringify({
+                                    action: 'saveRecordAndPdf',
+                                    id: state.student.id,
+                                    name: state.student.name,
+                                    loginTime: state.student.loginTime,
+                                    score: correct,
+                                    time: time,
+                                    pdfBase64Data: base64Data
+                                })
+                            });
+                        } catch(e) { console.error("백그라운드 PDF 업로드 실패", e); }
+                    });
+                }, 1500);
+            }
+        }
+
+        document.getElementById('pdf-download-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const pdfBtn = document.getElementById('pdf-download-btn');
+            const originalContent = pdfBtn.innerHTML;
+            pdfBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>PDF 생성 중...';
+            pdfBtn.disabled = true;
+
+            const element = document.getElementById('pdf-content');
+
+            // pagebreak에 legacy 모드 추가하여 텍스트 깨짐 추가 방어
+            const opt = {
+                margin:       [15, 10, 15, 10],
+                filename:     `${state.student.id || '학번'}_${state.student.name || '이름'}_일차방정식결과.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode: ['css', 'legacy'] }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                pdfBtn.innerHTML = originalContent;
+                pdfBtn.disabled = false;
+            });
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const studentIdInput = document.getElementById('studentId');
+            if(studentIdInput) {
+                studentIdInput.focus();
+            }
+        });
+    </script>
+</body>
+</html>
