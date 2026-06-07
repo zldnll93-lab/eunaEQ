@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Euna's 향산 수학 허브</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* 봄 (Spring) - 벚꽃 핑크 톤 */
+        .theme-spring { background: linear-gradient(135deg, #FFE5EC, #FFB8D2) !important; color: #9D1C3D !important; }
+        .shadow-spring { box-shadow: 0 10px 25px -5px rgba(255, 184, 210, 0.4); border-color: #FFE5EC; }
+        
+        /* 여름 (Summer) - 청량한 민트 톤 */
+        .theme-summer { background: linear-gradient(135deg, #D4F1F4, #75E6DA) !important; color: #0A6343 !important; }
+        .shadow-summer { box-shadow: 0 10px 25px -5px rgba(117, 230, 218, 0.4); border-color: #D4F1F4; }
+        
+        /* 가을 (Autumn) - 따뜻한 피치/베이지 톤 */
+        .theme-autumn { background: linear-gradient(135deg, #FFE4B5, #FFC074) !important; color: #8C4A00 !important; }
+        .shadow-autumn { box-shadow: 0 10px 25px -5px rgba(255, 192, 116, 0.4); border-color: #FFE4B5; }
+        
+        /* 겨울 (Winter) - 포근한 아이스 블루 톤 */
+        .theme-winter { background: linear-gradient(135deg, #E2ECE9, #BDE0FE) !important; color: #003694 !important; }
+        .shadow-winter { box-shadow: 0 10px 25px -5px rgba(189, 224, 254, 0.4); border-color: #E2ECE9; }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-50 font-sans text-slate-800 selection:bg-indigo-100">
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 lg:px-8 py-4 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 p-2 rounded-xl">
+                    <i data-lucide="graduation-cap" class="text-white w-7 h-7"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900">향산 수학 허브</h1>
+                    <p class="text-sm text-slate-500 font-medium">기초부터 탄탄하게 다지는 연산 학습</p>
+                </div>
+            </div>
+            <button class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base">
+                <i data-lucide="book-open" class="w-[18px] h-[18px]"></i>
+                학습 가이드 보기
+            </button>
+        </div>
+    </header>
+
+    <section class="max-w-7xl mx-auto px-4 lg:px-12 pt-16 pb-12 sm:pt-20 sm:pb-16 text-center">
+        <div class="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-1.5 rounded-full text-sm font-semibold mb-6">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>수학 마스터를 위한 첫걸음</span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight leading-tight">
+            일차방정식 계산 <br class="sm:hidden" />
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-500">
+                실력자 되기
+            </span>
+        </h2>
+        <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto font-medium">
+            원하는 학습 주제를 선택하여 일차방정식을 완벽하게 정복해보세요. <br />
+            기본 형태부터 복잡한 괄호 계산까지 사계절 컨셉과 함께 체계적으로 학습할 수 있습니다.
+        </p>
+    </section>
+
+    <main class="max-w-[90rem] mx-auto px-4 lg:px-12 pb-32">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 xl:gap-12">
+            
+            <div onclick="openModal('ax=b', '일차방정식의 가장 기본 형태인 ax=b 꼴의 풀이 방법을 봄바람처럼 가볍게 시작해봅시다.', 'theme-spring', 'step1.html', 'flower')" 
+                 class="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden flex flex-col border shadow-spring">
+                <div class="theme-spring p-8 xl:p-10 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white opacity-40"></div>
+                    <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-24 h-24 rounded-full bg-white opacity-20"></div>
+                    <div class="flex gap-2 mb-4 relative z-10">
+                        <i data-lucide="flower" class="w-10 h-10"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 relative z-10">ax = b</h3>
+                </div>
+                <div class="p-6 xl:p-8 flex flex-col flex-grow justify-between bg-white">
+                    <p class="text-slate-600 text-base mb-8 line-clamp-3">일차방정식의 가장 기본 형태입니다. 양변을 a로 나누는 원리를 학습합니다.</p>
+                    <div class="flex items-center justify-between text-slate-700 font-semibold transition-colors mt-auto text-base">
+                        <span>학습 시작</span>
+                        <div class="bg-slate-50 group-hover:bg-slate-100 p-2 rounded-full transition-colors transform group-hover:translate-x-1">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div onclick="openModal('ax+b = cx+d', '양변에 미지수와 상수가 모두 있는 일차방정식을 여름 바다처럼 시원하게 해결해봅시다.', 'theme-summer', 'step2.html', 'sun')" 
+                 class="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden flex flex-col border shadow-summer">
+                <div class="theme-summer p-8 xl:p-10 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white opacity-40"></div>
+                    <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-24 h-24 rounded-full bg-white opacity-20"></div>
+                    <div class="flex gap-2 mb-4 relative z-10">
+                        <i data-lucide="sun" class="w-10 h-10"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 relative z-10">ax+b = cx+d</h3>
+                </div>
+                <div class="p-6 xl:p-8 flex flex-col flex-grow justify-between bg-white">
+                    <p class="text-slate-600 text-base mb-8 line-clamp-3">이항을 통해 미지수는 좌변으로, 상수는 우변으로 모으는 방법을 배웁니다.</p>
+                    <div class="flex items-center justify-between text-slate-700 font-semibold transition-colors mt-auto text-base">
+                        <span>학습 시작</span>
+                        <div class="bg-slate-50 group-hover:bg-slate-100 p-2 rounded-full transition-colors transform group-hover:translate-x-1">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div onclick="openModal('a(x+b) = c', '분배법칙을 이용하여 괄호가 있는 일차방정식을 가을 낙엽 정리하듯 차근차근 풀어봅시다.', 'theme-autumn', 'step3.html', 'leaf')" 
+                 class="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden flex flex-col border shadow-autumn">
+                <div class="theme-autumn p-8 xl:p-10 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white opacity-40"></div>
+                    <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-24 h-24 rounded-full bg-white opacity-20"></div>
+                    <div class="flex gap-2 mb-4 relative z-10">
+                        <i data-lucide="leaf" class="w-10 h-10"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 relative z-10">a(x+b) = c</h3>
+                </div>
+                <div class="p-6 xl:p-8 flex flex-col flex-grow justify-between bg-white">
+                    <p class="text-slate-600 text-base mb-8 line-clamp-3">분배법칙을 활용해 괄호를 먼저 풀고 방정식을 간단하게 정리하는 과정을 연습합니다.</p>
+                    <div class="flex items-center justify-between text-slate-700 font-semibold transition-colors mt-auto text-base">
+                        <span>학습 시작</span>
+                        <div class="bg-slate-50 group-hover:bg-slate-100 p-2 rounded-full transition-colors transform group-hover:translate-x-1">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div onclick="openModal('a(bx+c)+d(ex+f)', '괄호가 여러 개 있는 복잡한 일차방정식을 겨울 눈 결정처럼 정교하고 완벽하게 정복해봅시다.', 'theme-winter', 'step4.html', 'snowflake')" 
+                 class="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden flex flex-col border shadow-winter">
+                <div class="theme-winter p-8 xl:p-10 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white opacity-40"></div>
+                    <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-24 h-24 rounded-full bg-white opacity-20"></div>
+                    <div class="flex gap-2 mb-4 relative z-10">
+                        <i data-lucide="snowflake" class="w-10 h-10"></i>
+                    </div>
+                    <h3 class="text-lg md:text-xl tracking-tighter whitespace-nowrap font-bold mb-2 relative z-10">a(bx+c)+d(ex+f)</h3>
+                </div>
+                <div class="p-6 xl:p-8 flex flex-col flex-grow justify-between bg-white">
+                    <p class="text-slate-600 text-base mb-8 line-clamp-3">복잡한 식에서 동류항끼리 묶어 계산하며 일차방정식을 마스터하는 최종 단계입니다.</p>
+                    <div class="flex items-center justify-between text-slate-700 font-semibold transition-colors mt-auto text-base">
+                        <span>학습 시작</span>
+                        <div class="bg-slate-50 group-hover:bg-slate-100 p-2 rounded-full transition-colors transform group-hover:translate-x-1">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-16 text-center">
+            <p class="inline-flex items-center gap-2 text-slate-500 font-medium bg-white px-6 py-3 rounded-full shadow-sm border border-slate-100">
+                <i data-lucide="heart" class="w-4 h-4 text-rose-400"></i>
+                Made by Euna for Math Education
+            </p>
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-10 text-center">
+        <p>© 2026 수학 학습 허브. 일차방정식 정복 프로젝트.</p>
+    </footer>
+
+    <div id="modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity hidden">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative">
+            <div id="modal-icon-container" class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+            </div>
+            <h3 id="modal-title" class="text-2xl font-bold text-slate-900 mb-2"></h3>
+            <p id="modal-description" class="text-slate-600 mb-8 leading-relaxed"></p>
+            <div class="flex gap-3">
+                <button onclick="closeModal()" class="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition-colors">
+                    닫기
+                </button>
+                <button id="modal-action-btn" class="flex-1 px-4 py-3 rounded-xl font-semibold transition-all shadow-md hover:shadow-lg">
+                    입장하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        let currentLink = '';
+
+        function openModal(title, description, colorClass, link, icon1, icon2) {
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalDescription = document.getElementById('modal-description');
+            const iconContainer = document.getElementById('modal-icon-container');
+            const actionBtn = document.getElementById('modal-action-btn');
+
+            modalTitle.innerText = title;
+            modalDescription.innerHTML = description + '<br><br>해당 단원의 학습 콘텐츠로 이동합니다.';
+            
+            // 모달 아이콘 배경 및 버튼 색상을 커스텀 CSS 클래스(theme-spring 등)에 맞게 설정
+            iconContainer.className = `w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${colorClass}`;
+            actionBtn.className = `flex-1 px-4 py-3 rounded-xl font-semibold transition-all shadow-md hover:shadow-lg ${colorClass}`;
+            
+            let iconHtml = `<i data-lucide="${icon1}" class="w-8 h-8"></i>`;
+            if(icon2) {
+                iconHtml += `<i data-lucide="${icon2}" class="w-8 h-8 ml-1"></i>`;
+            }
+            iconContainer.innerHTML = iconHtml;
+            lucide.createIcons();
+
+            currentLink = link;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        document.getElementById('modal-action-btn').onclick = function() {
+            if (currentLink) {
+                window.open(currentLink, '_self');
+            }
+            closeModal();
+        };
+    </script>
+</body>
+</html>
