@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Euna's 향산 수학 허브(2)</title>
+    <title>Euna's 향산 수학 허브</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -32,7 +32,7 @@
                     <i data-lucide="graduation-cap" class="text-white w-7 h-7"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900">향산 일차방정식 허브</h1>
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900">향산 수학 허브</h1>
                     <p class="text-sm text-slate-500 font-medium">기초부터 탄탄하게 다지는 연산 학습</p>
                 </div>
             </div>
@@ -54,7 +54,7 @@
                 실력자 되기
             </span>
         </h2>
-        <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto font-medium">
+        <p class="text-base sm:text-lg text-slate-600 max-w-4xl mx-auto font-medium">
             원하는 학습 주제를 선택하여 일차방정식을 완벽하게 정복해보세요. <br />
             기본 형태부터 복잡한 괄호 계산까지 사계절 컨셉과 함께 체계적으로 학습할 수 있습니다.
         </p>
@@ -126,7 +126,7 @@
                 </div>
             </div>
 
-            <div onclick="openModal('a(bx+c)+d(ex+f)=g', '괄호가 여러 개 있는 복잡한 일차방정식을 겨울 눈 결정처럼 정교하고 완벽하게 정복해봅시다.', 'theme-winter', 'step4.html', 'snowflake')" 
+            <div onclick="openModal('a(bx+c)+d(ex+f)', '괄호가 여러 개 있는 복잡한 일차방정식을 겨울 눈 결정처럼 정교하고 완벽하게 정복해봅시다.', 'theme-winter', 'step4.html', 'snowflake')" 
                  class="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden flex flex-col border shadow-winter">
                 <div class="theme-winter p-8 xl:p-10 flex flex-col items-center justify-center text-center relative overflow-hidden">
                     <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white opacity-40"></div>
@@ -134,7 +134,7 @@
                     <div class="flex gap-2 mb-4 relative z-10">
                         <i data-lucide="snowflake" class="w-10 h-10"></i>
                     </div>
-                    <h3 class="text-lg md:text-xl tracking-tighter whitespace-nowrap font-bold mb-2 relative z-10">a(bx+c)+d(ex+f) = g</h3>
+                    <h3 class="text-lg md:text-xl tracking-tighter whitespace-nowrap font-bold mb-2 relative z-10">a(bx+c)+d(ex+f)</h3>
                 </div>
                 <div class="p-6 xl:p-8 flex flex-col flex-grow justify-between bg-white">
                     <p class="text-slate-600 text-base mb-8 line-clamp-3">복잡한 식에서 동류항끼리 묶어 계산하며 일차방정식을 마스터하는 최종 단계입니다.</p>
@@ -192,7 +192,6 @@
             modalTitle.innerText = title;
             modalDescription.innerHTML = description + '<br><br>해당 단원의 학습 콘텐츠로 이동합니다.';
             
-            // 모달 아이콘 배경 및 버튼 색상을 커스텀 CSS 클래스(theme-spring 등)에 맞게 설정
             iconContainer.className = `w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${colorClass}`;
             actionBtn.className = `flex-1 px-4 py-3 rounded-xl font-semibold transition-all shadow-md hover:shadow-lg ${colorClass}`;
             
