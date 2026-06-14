@@ -282,12 +282,26 @@
     
         function createConfigs() {
             const configs = [];
-            // 정답이 정수인 문제 10개 출제
-            for(let i=0; i<10; i++) configs.push({ type: 'int' });
-            // 정답이 분수(이항 후 약분 과정 필수 포함)인 문제 5개 출제
-            for(let i=0; i<5; i++) configs.push({ type: 'frac' });
+            // 1. 우변의 상수항 q가 0이 되는 문제 딱 1개 출제 (정답은 0)
+            configs.push({ type: 'int', isZero: true });
             
-            // 문제 순서 무작위 섞기
+            // 2. 정답이 정수(0 제외)인 문제 9개 출제
+            for(let i=0; i<9; i++) configs.push({ type: 'int', isZero: false });
+            
+            // 3. 정답이 분수인 문제 딱 5개 출제
+            for(let i=0; i<5; i++) configs.push({ type: 'frac', isZero: false });
+            
+            // 4. 이항 후 x의 계수 p가 음수(p < 0)인 문제를 정확히 5개로 통제하기 위한 로직
+            let indices = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14];
+            for (let i = indices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [indices[i], indices[j]] = [indices[j], indices[i]];
+            }
+            for (let i = 0; i < 15; i++) {
+                configs[indices[i]].p_negative = (i < 5); // 15문제 중 딱 5문제만 true
+            }
+
+            // 5. 문제 출제 순서 무작위 섞기
             for (let i = configs.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [configs[i], configs[j]] = [configs[j], configs[i]];
@@ -301,9 +315,12 @@
             // 1. 역산을 위한 정답(목표) 분수 설정
             if (config.type === 'int') {
                 D = 1;
-                N = Math.floor(Math.random() * 9) - 4; // -4 ~ 4
-                if (N === 0) N = 2; // 0이 되는 것을 방지
-                k = Math.floor(Math.random() * 4) + 2; // 2, 3, 4, 5 (이항 후 나눗셈/약분에 사용될 배수)
+                if (config.isZero) {
+                    N = 0; // q = 0이 되도록 설정
+                } else {
+                    N = Math.floor(Math.random() * 9) - 4; // -4 ~ 4
+                    if (N === 0) N = 2; // isZero가 아니면 0 방지
+                }
             } else {
                 const fractionPool = [
                     {n: 1, d: 2}, {n: -1, d: 2}, {n: 3, d: 2}, {n: -3, d: 2},
@@ -314,31 +331,31 @@
                 let choice = fractionPool[Math.floor(Math.random() * fractionPool.length)];
                 N = choice.n;
                 D = choice.d;
-                k = Math.floor(Math.random() * 3) + 2; // 2, 3, 4 (공통 인수로 약분되도록 설계)
             }
+
+            // 2. p_negative 여부에 따라 k의 부호 결정 (이항 후 좌변 x계수 p의 부호)
+            let k_abs = Math.floor(Math.random() * 3) + 2; // 2, 3, 4
+            k = config.p_negative ? -k_abs : k_abs;
     
-            // 2. 이항 결과를 바탕으로 계수와 상수 차이값 설정
-            // a - c = k * D  (좌변으로 x를 모았을 때의 계수)
-            // d - b = k * N  (우변으로 상수를 모았을 때의 값)
-            let diff_ac = k * D; 
-            let diff_db = k * N; 
+            // 3. 이항 결과를 바탕으로 계수와 상수 차이값 설정
+            // p = a - c = k * D  (좌변으로 x를 모았을 때의 계수)
+            // q = d - b = k * N  (우변으로 상수를 모았을 때의 값)
+            let p = k * D; 
+            let q = k * N; 
     
-            // 3. a, b, c, d 모두를 0이 아닌 정수로 생성 (ax+b=cx+d 의 4개 항이 모두 보이도록)
+            // 4. a, b, c, d 모두를 0이 아닌 정수로 생성 (ax+b=cx+d 의 4개 항이 모두 보이도록 설계)
             let c = Math.floor(Math.random() * 7) - 3; // -3 ~ 3
             if (c === 0) c = 1;
-            let a = c + diff_ac;
+            let a = c + p;
             if (a === 0) { c += 2; a += 2; }
     
             let b = Math.floor(Math.random() * 11) - 5; // -5 ~ 5
             if (b === 0) b = 1;
-            let d = b + diff_db;
+            let d = b + q;
             if (d === 0) { b += 2; d += 2; }
     
-            // 4. x계수가 큰 쪽이 항상 고정되지 않도록 50% 확률로 좌/우변 항을 스왑
+            // 주의: 좌변, 우변 항을 무작위로 바꾸면 p의 부호가 뒤집히므로 스왑 로직은 엄격하게 제거되었습니다.
             let leftA = a, leftB = b, rightC = c, rightD = d;
-            if (Math.random() < 0.5) {
-                leftA = c; leftB = d; rightC = a; rightD = b;
-            }
     
             // 화면 및 PDF 수식 출력 포맷팅
             function formatTerm(coef, isX, isFirst) {
