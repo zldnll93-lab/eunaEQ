@@ -52,23 +52,23 @@
             border-collapse: collapse;
         }
         .print-table th, .print-table td {
-            border: 1px solid #ffedd5; /* 가을 오렌지 톤 보더 */
-            padding: 7px 8px;
+            border: 1px solid #ffedd5;
+            padding: 15px 8px; /* 10문항 표의 세로 여백을 15px로 조절 */
             text-align: center;
         }
         .print-table th {
             background-color: #fff7ed;
             font-weight: 700;
-            color: #9a3412;
+            color: #876A57; /* 텍스트 브라운 계열 통일 */
         }
         .print-table td {
-            color: #7c2d12;
+            color: #876A57;
         }
     
-        /* [핵심 복구 및 최적화] PDF 페이지 넘김 시 거대한 빈 여백 및 글자 잘림 동시 방지 */
+        /* PDF 페이지 넘김 시 거대한 빈 여백 방지 */
         #ai-feedback-display p,
         #ai-feedback-display li {
-            margin-bottom: 0.5rem !important; /* 쪼개진 문단들이 촘촘하게 보이도록 여백 축소 */
+            margin-bottom: 0.5rem !important; 
             margin-top: 0 !important;
             page-break-inside: avoid;
             break-inside: avoid;
@@ -89,9 +89,9 @@
         <!-- 로그인 섹션 -->
         <div id="sec-login" class="bg-white p-6 rounded-2xl shadow-sm border border-orange-100 flex flex-col space-y-4">
             <h2 class="text-xl font-bold text-slate-700 text-center mb-2">시작하기 전에</h2>
-            <input type="text" id="studentId" autofocus placeholder="학번 (예: 10101)" class="w-full p-4 bg-orange-50/50 border border-orange-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-300 focus:bg-white transition-all">
-            <input type="text" id="studentName" placeholder="이름" class="w-full p-4 bg-orange-50/50 border border-orange-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-300 focus:bg-white transition-all">
-            <input type="password" id="studentPw" placeholder="비밀번호" class="w-full p-4 bg-orange-50/50 border border-orange-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-300 focus:bg-white transition-all">
+            <input type="text" id="studentId" autofocus placeholder="학번 (예: 10101)" class="w-full p-4 bg-orange-50/50 border border-orange-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B39682] focus:bg-white transition-all">
+            <input type="text" id="studentName" placeholder="이름" class="w-full p-4 bg-orange-50/50 border border-orange-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B39682] focus:bg-white transition-all">
+            <input type="password" id="studentPw" placeholder="비밀번호" class="w-full p-4 bg-orange-50/50 border border-orange-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B39682] focus:bg-white transition-all">
             
             <button onclick="handleLogin()" id="loginBtn" class="w-full bg-[#9A7B66] hover:bg-[#876A57] text-white font-bold py-4 rounded-xl mt-2 transition-colors">
                 로그인 및 시작
@@ -102,8 +102,8 @@
         <!-- 퀴즈 섹션 -->
         <div id="sec-quiz" class="hidden bg-white p-6 rounded-2xl shadow-sm border border-orange-100 flex-col relative">
             <div class="flex justify-between items-center mb-6 border-b border-orange-100 pb-4">
-                <div class="text-amber-700 font-bold bg-orange-50 px-3 py-1 rounded-full">문제 <span id="q-idx">1</span> / 15</div>
-                <div id="quiz-timer" class="text-amber-400 font-mono"><i class="fa-regular fa-clock mr-1"></i>00:00</div>
+                <div class="text-[#876A57] font-bold bg-orange-50 px-3 py-1 rounded-full">문제 <span id="q-idx">1</span> / 10</div>
+                <div id="quiz-timer" class="text-[#9A7B66] font-mono"><i class="fa-regular fa-clock mr-1"></i>00:00</div>
             </div>
     
             <div id="stamp-correct" class="stamp-overlay text-emerald-400 text-8xl"><i class="fa-regular fa-circle"></i></div>
@@ -111,19 +111,19 @@
     
             <div id="quiz-box" class="py-12 flex flex-col items-center">
                 <div id="question-display" class="text-3xl md:text-4xl math-text text-slate-800 mb-8 h-20 flex items-center justify-center whitespace-nowrap"></div>
-                <input type="text" id="answer-input" placeholder="x의 값 (분수는 / 사용, 예: -1/2) ⏎" class="w-full md:w-3/4 p-4 text-center text-lg bg-orange-50/50 border-b-2 border-orange-200 focus:outline-none focus:border-amber-400 focus:bg-white transition-all rounded-t-lg">
+                <input type="text" id="answer-input" placeholder="x의 값 (분수는 / 사용, 예: -1/2) ⏎" class="w-full md:w-3/4 p-4 text-center text-lg bg-orange-50/50 border-b-2 border-orange-200 focus:outline-none focus:border-[#9A7B66] focus:bg-white transition-all rounded-t-lg">
             </div>
     
             <div class="w-full bg-orange-50 rounded-full h-2 mt-4">
-                <div id="progress-bar" class="bg-amber-400 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                <div id="progress-bar" class="bg-[#9A7B66] h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
             </div>
         </div>
     
         <!-- 로딩 섹션 -->
         <div id="sec-loading" class="hidden bg-white p-8 rounded-2xl shadow-sm border border-orange-100 text-center py-16">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-orange-200 border-t-amber-500 mb-4"></div>
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-orange-200 border-t-[#9A7B66] mb-4"></div>
             <h3 class="text-xl font-bold text-slate-700 mb-2">결과 분석 중...</h3>
-            <p class="text-amber-500 text-sm">AI 선생님이 피드백을 작성하고 리포트를 구성하고 있어요.</p>
+            <p class="text-[#9A7B66] text-sm">AI 선생님이 피드백을 작성하고 리포트를 구성하고 있어요.</p>
         </div>
     
         <!-- 결과 섹션 -->
@@ -133,17 +133,14 @@
                 
                 <!-- ====== PDF 1쪽 파트: 제목, 정보, 정오답표 ====== -->
                 <div class="p-8">
-                    <!-- 1쪽 상단 장식 선 -->
-                    <div class="mx-auto w-[98%] h-2.5 bg-amber-500 rounded-full mb-10 mt-2"></div>
+                    <!-- 1쪽 상단 장식 선 (파스텔 브라운으로 통일) -->
+                    <div class="mx-auto w-[98%] h-2.5 bg-[#9A7B66] rounded-full mb-10 mt-2"></div>
     
                     <div class="mb-6">
-                        <h1 id="report-title" class="text-3xl font-bold text-amber-700 tracking-tight text-center"></h1>
-                        <!-- 제목과 그 아래 줄 사이의 여백 (글자 한 줄 높이와 동일한 h-6 적용) -->
+                        <h1 id="report-title" class="text-3xl font-bold text-[#9A7B66] tracking-tight text-center"></h1>
                         <div class="h-6"></div>
-                        <!-- 두 번째 줄: 학번과 이름 (왼쪽 정렬) -->
                         <div id="report-student-info" class="text-left text-lg font-bold text-slate-700 mb-2 px-2"></div>
-                        <!-- 세 번째 줄: 결과 통계 (왼쪽 정렬) -->
-                        <div class="flex flex-wrap justify-start items-center gap-4 text-amber-600 font-medium px-2">
+                        <div class="flex justify-start items-center gap-3 text-[#9A7B66] font-medium px-2 whitespace-nowrap text-[0.95rem]">
                             <span id="report-correct"></span>
                             <span class="text-orange-200">|</span>
                             <span id="report-time"></span>
@@ -171,15 +168,14 @@
                 </div>
     
                 <!-- ====== PDF 2쪽 파트: AI 피드백 ====== -->
-                <!-- 2쪽 장식선이 1쪽으로 넘어가지 않도록 강력한 page-break 스타일 적용 -->
                 <div class="p-8 sm:border-none" style="page-break-before: always; break-before: page;">
                     <!-- 2쪽 상단 장식 선 -->
-                    <div class="mx-auto w-[98%] h-2.5 bg-amber-500 rounded-full mb-10 mt-2"></div>
+                    <div class="mx-auto w-[98%] h-2.5 bg-[#9A7B66] rounded-full mb-10 mt-2"></div>
                     
-                    <h2 class="text-2xl font-bold text-amber-700 mb-6 flex items-center">
+                    <h2 class="text-2xl font-bold text-[#9A7B66] mb-6 flex items-center">
                         <i class="fa-solid fa-chalkboard-user mr-3"></i>AI 선생님의 맞춤형 피드백
                     </h2>
-                    <div id="ai-feedback-display" class="prose prose-amber max-w-none text-slate-700 p-6 bg-orange-50/50 rounded-xl border border-orange-200">
+                    <div id="ai-feedback-display" class="prose prose-stone max-w-none text-slate-700 p-6 bg-orange-50/50 rounded-xl border border-orange-200">
                         <!-- AI 피드백 내용 -->
                     </div>
                 </div>
@@ -200,7 +196,7 @@
                 <h3 class="text-lg font-bold text-slate-700 mb-4 flex items-center"><i class="fa-solid fa-trophy text-yellow-500 mr-2"></i>명예의 전당 (TOP 30)</h3>
                 <div class="overflow-x-auto rounded-xl border border-orange-200">
                     <table class="w-full text-sm text-left whitespace-nowrap">
-                        <thead class="bg-orange-50/50 text-amber-700 font-bold border-b border-orange-200">
+                        <thead class="bg-orange-50/50 text-[#9A7B66] font-bold border-b border-orange-200">
                             <tr>
                                 <th class="px-4 py-3 text-center">순위</th>
                                 <th class="px-4 py-3">이름</th>
@@ -237,7 +233,7 @@
             box.className = 'bg-white p-6 rounded-2xl shadow-xl max-w-sm w-full mx-4 text-center';
             box.innerHTML = `
                 <p class="text-slate-700 mb-6 font-medium">${message}</p>
-                <button class="bg-amber-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-amber-600 w-full transition-colors">확인</button>
+                <button class="bg-[#9A7B66] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#876A57] w-full transition-colors">확인</button>
             `;
             box.querySelector('button').onclick = () => document.body.removeChild(overlay);
             overlay.appendChild(box);
@@ -279,86 +275,101 @@
                 target.classList.add('block');
             }
         }
-    
+
+        // 문항 설정을 생성하는 함수 (총 10문항)
         function createConfigs() {
             const configs = [];
-            // 1. 우변의 상수항 q가 0이 되는 문제 딱 1개 출제 (정답은 0)
+            // 1. 분수 정답 3문제
+            for(let i=0; i<3; i++) configs.push({ type: 'frac', isZero: false });
+            
+            // 2. 정수 정답 7문제 (그 중 1문제는 0정답)
             configs.push({ type: 'int', isZero: true });
+            for(let i=0; i<6; i++) configs.push({ type: 'int', isZero: false });
             
-            // 2. 정답이 정수(0 제외)인 문제 9개 출제
-            for(let i=0; i<9; i++) configs.push({ type: 'int', isZero: false });
-            
-            // 3. 정답이 분수인 문제 딱 5개 출제
-            for(let i=0; i<5; i++) configs.push({ type: 'frac', isZero: false });
-            
-            // 4. 이항 후 x의 계수 p가 음수(p < 0)인 문제를 정확히 5개로 통제하기 위한 로직
-            let indices = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14];
-            for (let i = indices.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [indices[i], indices[j]] = [indices[j], indices[i]];
-            }
-            for (let i = 0; i < 15; i++) {
-                configs[indices[i]].p_negative = (i < 5); // 15문제 중 딱 5문제만 true
-            }
-    
-            // 5. 문제 출제 순서 무작위 섞기
+            // 타입 섞기
             for (let i = configs.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [configs[i], configs[j]] = [configs[j], configs[i]];
             }
+    
+            // a = -1 조건 부여 (정확히 2문제)
+            let a_minus_1_indices = [];
+            while(a_minus_1_indices.length < 2) {
+                let r = Math.floor(Math.random() * 10);
+                if(!a_minus_1_indices.includes(r)) a_minus_1_indices.push(r);
+            }
+            
+            for (let i = 0; i < 10; i++) {
+                configs[i].a_minus_1 = a_minus_1_indices.includes(i);
+            }
+    
             return configs;
         }
     
-        // 💡 a(bx+c) = d 형태의 문제 생성 로직
+        // 각 문항의 구체적인 숫자를 생성하는 함수
         function generateProblem(config) {
-            let N, D, k;
-
-            // 1. 역산을 위한 정답(목표) 분수 설정 (x = N/D)
-            if (config.type === 'int') {
-                D = 1;
-                if (config.isZero) {
-                    N = 0; 
+            let N, D, a, b, c, d, e;
+            let valid = false;
+    
+            while (!valid) {
+                // 1. 정답(N/D) 세팅
+                if (config.type === 'int') {
+                    D = 1;
+                    if (config.isZero) {
+                        N = 0;
+                    } else {
+                        N = Math.floor(Math.random() * 9) - 4; // -4 ~ 4
+                        if (N === 0) N = 2;
+                    }
                 } else {
-                    N = Math.floor(Math.random() * 9) - 4; // -4 ~ 4
-                    if (N === 0) N = 2; // isZero가 아니면 0 방지
+                    const fractionPool = [
+                        {n: 1, d: 2}, {n: -1, d: 2}, {n: 3, d: 2}, {n: -3, d: 2},
+                        {n: 1, d: 3}, {n: -1, d: 3}, {n: 2, d: 3}, {n: -2, d: 3},
+                        {n: 1, d: 4}, {n: -1, d: 4}, {n: 3, d: 4}, {n: -3, d: 4},
+                        {n: 1, d: 5}, {n: -1, d: 5}, {n: 2, d: 5}, {n: -2, d: 5}
+                    ];
+                    let choice = fractionPool[Math.floor(Math.random() * fractionPool.length)];
+                    N = choice.n; D = choice.d;
                 }
-            } else {
-                const fractionPool = [
-                    {n: 1, d: 2}, {n: -1, d: 2}, {n: 3, d: 2}, {n: -3, d: 2},
-                    {n: 1, d: 3}, {n: -1, d: 3}, {n: 2, d: 3}, {n: -2, d: 3},
-                    {n: 1, d: 4}, {n: -1, d: 4}, {n: 3, d: 4}, {n: -3, d: 4},
-                    {n: 1, d: 5}, {n: -1, d: 5}, {n: 2, d: 5}, {n: -2, d: 5}
-                ];
-                let choice = fractionPool[Math.floor(Math.random() * fractionPool.length)];
-                N = choice.n;
-                D = choice.d;
+    
+                // 2. a 설정 (|a| <= 4)
+                if (config.a_minus_1) {
+                    a = -1;
+                } else {
+                    // a가 1이면 분배법칙의 의미가 퇴색되므로 제외
+                    const aPool = [-4, -3, -2, 2, 3, 4]; 
+                    a = aPool[Math.floor(Math.random() * aPool.length)];
+                }
+    
+                // 3. b 설정 (|a * b| <= 16)
+                let maxB = Math.floor(16 / Math.abs(a));
+                if (maxB < 1) continue;
+                
+                b = Math.floor(Math.random() * (2 * maxB + 1)) - maxB;
+                if (b === 0) continue;
+                
+                // 4. 방정식 Px = Q 꼴을 위한 k 배수 선택
+                let k = Math.floor(Math.random() * 4) + 1; // 1 ~ 4
+                if (Math.random() < 0.5) k = -k;
+                
+                let P = k * D; // 이항 후 x의 계수: ab - d = P
+                let Q = k * N; // 이항 후 우변의 상수: e - ac = Q
+                
+                // 5. 우변의 x 계수 d
+                d = a * b - P;
+                if (d === 0) continue; // 우변에도 x항이 존재하도록
+                
+                // 6. 상수항 c, e
+                c = Math.floor(Math.random() * 11) - 5; // -5 ~ 5
+                if (c === 0) continue;
+                
+                e = Q + a * c;
+                if (e === 0) continue; // 우변 상수항도 존재하도록
+    
+                valid = true;
             }
-
-            // 2. 괄호 안의 x 계수(b) 선택 (-4 ~ 4, 0 제외)
-            let b = Math.floor(Math.random() * 9) - 4;
-            if (b === 0) b = 2;
-            let b_sign = b > 0 ? 1 : -1;
-
-            // 3. 상수 k 설정 (config.p_negative 조건에 맞춤)
-            // 전개 후 x의 계수는 a*b = k*D*b가 되며, D는 양수이므로 x 계수의 부호는 k*b에 의해 결정됨
-            // p_negative가 true면 k와 b의 부호가 달라야 함
-            let k_abs = Math.floor(Math.random() * 3) + 2; // 2, 3, 4 (a가 1이 되는 것을 방지하여 무조건 전개 과정이 보이도록 함)
-            if (config.p_negative) {
-                k = -b_sign * k_abs;
-            } else {
-                k = b_sign * k_abs;
-            }
-
-            // 4. 식의 상수 a와 괄호 안의 상수항 c 결정
-            let a = k * D;
-            let c = Math.floor(Math.random() * 11) - 5; // -5 ~ 5
-            if (c === 0) c = 3;
-
-            // 5. 우변 d 결정: a(bx+c) = abx + ac = a*b*(N/D) + a*c = k*D*b*N/D + k*D*c = k(b*N + c*D)
-            // 이 방식으로 d가 무조건 깔끔한 정수로 도출됨
-            let d = k * (b * N + c * D);
-
-            // 화면 및 PDF, AI 프롬프트 포맷팅을 위한 헬퍼 함수
+    
+            // 화면 및 PDF 포맷팅
             function formatInner(coefB, coefC, isHtml) {
                 let bStr = "";
                 let xStr = isHtml ? '<span class="mx-1 math-text">&#x1D465;</span>' : 'x';
@@ -366,18 +377,35 @@
                 if (coefB === 1) bStr = xStr;
                 else if (coefB === -1) bStr = "-" + xStr;
                 else bStr = coefB + xStr;
-
+    
                 let cStr = coefC > 0 ? ` + ${coefC}` : ` - ${Math.abs(coefC)}`;
                 return `${bStr}${cStr}`;
             }
-
+            
+            function formatRight(coefD, coefE, isHtml) {
+                let xStr = isHtml ? '<span class="mx-1 math-text">&#x1D465;</span>' : 'x';
+                let dStr = "";
+                
+                if (coefD === 1) dStr = xStr;
+                else if (coefD === -1) dStr = "-" + xStr;
+                else dStr = coefD + xStr;
+                
+                let eStr = coefE > 0 ? ` + ${coefE}` : ` - ${Math.abs(coefE)}`;
+                return `${dStr}${eStr}`;
+            }
+    
             let innerHtml = formatInner(b, c, true);
             let innerText = formatInner(b, c, false);
-
-            let questionHtml = `${a}(${innerHtml}) <span class="mx-2">=</span> ${d}`;
-            let questionText = `${a}(${innerText}) = ${d}`;
-
-            // 최종 정답 문자열 생성 (기약분수 형태)
+            
+            let rightHtml = formatRight(d, e, true);
+            let rightText = formatRight(d, e, false);
+    
+            let aStrHtml = a === -1 ? "-" : a;
+            let aStrText = a === -1 ? "-" : a;
+    
+            let questionHtml = `${aStrHtml}(${innerHtml}) <span class="mx-2">=</span> ${rightHtml}`;
+            let questionText = `${aStrText}(${innerText}) = ${rightText}`;
+    
             let correctStr = "";
             if (N === 0) {
                 correctStr = "0";
@@ -387,7 +415,7 @@
                 let sign = (N < 0) ? "-" : "";
                 correctStr = `${sign}${Math.abs(N)}/${D}`;
             }
-
+    
             return {
                 questionHtml: questionHtml,
                 questionText: questionText,
@@ -459,7 +487,7 @@
             const input = document.getElementById('answer-input');
             input.value = ''; input.disabled = false; input.focus();
             
-            const progress = (state.currentIndex / 15) * 100;
+            const progress = (state.currentIndex / 10) * 100;
             document.getElementById('progress-bar').style.width = `${progress}%`;
         }
     
@@ -503,7 +531,7 @@
                 quizBox.classList.remove('shake-anim');
                 
                 state.currentIndex++;
-                if (state.currentIndex < 15) loadNextQuestion();
+                if (state.currentIndex < 10) loadNextQuestion();
                 else finishQuiz();
             }, 800);
         }
@@ -552,12 +580,12 @@
             const id = state.student.id || '학번미상';
             const name = state.student.name || '이름미상';
             
-            document.getElementById('report-title').innerText = `일차방정식(a(bx+c)=d 형태) 결과 리포트`;
-            document.getElementById('report-student-info').innerHTML = `<i class="fa-solid fa-user-graduate text-amber-500 mr-2"></i>${id} ${name}`;
+            document.getElementById('report-title').innerText = `일차방정식(a(bx+c)=dx+e 형태) 결과 리포트`;
+            document.getElementById('report-student-info').innerHTML = `<i class="fa-solid fa-user-graduate text-[#9A7B66] mr-2"></i>${id} ${name}`;
             
-            document.getElementById('report-correct').innerHTML = `<i class="fa-solid fa-check text-emerald-400 mr-2"></i>맞힌 개수: <span class="font-bold text-amber-700">${correct} / 15</span>`;
-            document.getElementById('report-time').innerHTML = `<i class="fa-regular fa-clock text-amber-400 mr-2"></i>걸린 시간: <span class="font-bold text-slate-700">${time}초</span>`;
-            document.getElementById('report-date').innerHTML = `<i class="fa-regular fa-calendar text-amber-400 mr-2"></i>접속 일시: <span class="font-bold text-slate-700">${state.student.loginTime}</span>`;
+            document.getElementById('report-correct').innerHTML = `<i class="fa-solid fa-check text-emerald-400 mr-2"></i>맞힌 개수: <span class="font-bold text-[#876A57]">${correct} / 10</span>`;
+            document.getElementById('report-time').innerHTML = `<i class="fa-regular fa-clock text-[#9A7B66] mr-2"></i>걸린 시간: <span class="font-bold text-slate-700">${time}초</span>`;
+            document.getElementById('report-date').innerHTML = `<i class="fa-regular fa-calendar text-[#9A7B66] mr-2"></i>접속 일시: <span class="font-bold text-slate-700">${state.student.loginTime}</span>`;
     
             const tbody = document.getElementById('result-table-body');
             tbody.innerHTML = '';
@@ -631,16 +659,16 @@
             rankTbody.innerHTML = '';
             if (data.leaderboard && Array.isArray(data.leaderboard) && data.leaderboard.length > 0) {
                 data.leaderboard.forEach((r, idx) => {
-                    let rankStyle = "text-amber-500";
-                    if(idx === 0) rankStyle = "text-amber-600 font-bold";
-                    else if(idx === 1) rankStyle = "text-amber-500 font-bold";
-                    else if(idx === 2) rankStyle = "text-amber-700 font-bold";
+                    let rankStyle = "text-[#B39682]";
+                    if(idx === 0) rankStyle = "text-[#876A57] font-bold";
+                    else if(idx === 1) rankStyle = "text-[#9A7B66] font-bold";
+                    else if(idx === 2) rankStyle = "text-[#876A57] font-bold";
     
                     const row = `
                         <tr class="hover:bg-orange-50 transition-colors">
                             <td class="px-4 py-3 text-center ${rankStyle}">${idx + 1}</td>
                             <td class="px-4 py-3 font-medium text-slate-700">${r.name}</td>
-                            <td class="px-4 py-3 text-center text-amber-600 font-bold">${r.score || r.correct || 0}</td>
+                            <td class="px-4 py-3 text-center text-[#9A7B66] font-bold">${r.score || r.correct || 0}</td>
                             <td class="px-4 py-3 text-center text-slate-400 text-xs">${r.time}초</td>
                             <td class="px-4 py-3 text-center text-slate-400 text-xs">${r.loginTime || '-'}</td>
                         </tr>
@@ -648,7 +676,7 @@
                     rankTbody.innerHTML += row;
                 });
             } else {
-                rankTbody.innerHTML = `<tr><td colspan="5" class="px-4 py-6 text-center text-amber-400">데이터가 없습니다.</td></tr>`;
+                rankTbody.innerHTML = `<tr><td colspan="5" class="px-4 py-6 text-center text-[#B39682]">데이터가 없습니다.</td></tr>`;
             }
     
             if (data.triggerPdf) {
